@@ -18,5 +18,5 @@ object MyFirstMod : ModInitializer {
 	}
 
 	fun id(path: String): Identifier
-		= new Identifier(MOD_ID, path)
+		= Identifier(MOD_ID, path)
 }
