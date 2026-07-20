@@ -1,7 +1,7 @@
 name: Generate Minecraft Sources
 
 on:
-  workflow_dispatch:  # 手动触发
+  workflow_dispatch:
 
 jobs:
   gen-sources:
@@ -10,26 +10,23 @@ jobs:
       - name: 检出代码
         uses: actions/checkout@v4
 
-      - name: 设置 JDK 17
+      - name: 设置 JDK 21  # 改这里
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '21'  # 17 → 21
           distribution: 'temurin'
 
       - name: 赋予 gradlew 执行权限
         run: chmod +x gradlew
 
-      - name: 运行 genSources（生成反编译源码）
+      - name: 运行 genSources
         run: ./gradlew genSources --no-daemon
 
-      - name: 打包生成的源码和缓存（供下载）
+      - name: 打包生成的文件
         run: |
           mkdir -p output
-          # 复制 build 目录（包含反编译后的源码）
           cp -r build output/
-          # 复制 gradle 缓存中的 fabric-loom 相关文件（可选，但有助于加速本地识别）
           cp -r ~/.gradle/caches/fabric-loom output/fabric-loom-cache 2>/dev/null || true
-          # 压缩成 zip
           cd output && zip -r ../gen-sources-output.zip . && cd ..
 
       - name: 上传 Artifact
