@@ -16,9 +16,10 @@ public class CustomItem extends Item{
 
     @Override
 public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-    if (world.isClient) {
-        user.playSound(SoundEvents.BLOCK_WOOL_BREAK, 1.0f, 1.0f);
-    }
+    if (!world.isClient) {
+    world.playSound(null, user.getX(), user.getY(), user.getZ(),
+        SoundEvents.BLOCK_WOOL_BREAK, user.getSoundCategory(), 1.0f, 1.0f);
+}
     return TypedActionResult.success(user.getStackInHand(hand));
 }
 }
