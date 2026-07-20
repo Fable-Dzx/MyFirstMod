@@ -15,11 +15,10 @@ public class CustomItem extends Item{
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        // TODO Auto-generated method stub
-        if (world.isClient){
+public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+    if (world.isClient) {
         user.playSound(SoundEvents.BLOCK_WOOL_BREAK, 1.0f, 1.0f);
-        }
-        return super.use(world, user, hand);
     }
+    return TypedActionResult.success(user.getStackInHand(hand));
+}
 }
