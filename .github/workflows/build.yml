@@ -16,12 +16,10 @@ jobs:
         with:
           java-version: '21'
           distribution: 'microsoft'
-
-      - name: Generate Minecraft sources
-        run: ./gradlew genSources
-
       - name: make gradle wrapper executable
         run: chmod +x ./gradlew
+      - name: Generate Minecraft sources
+        run: ./gradlew genSources
 
       - name: build
         run: ./gradlew build
