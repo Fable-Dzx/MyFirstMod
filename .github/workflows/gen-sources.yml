@@ -1,7 +1,10 @@
-name: Generate Minecraft Sources
+name: 生成反编译源码并发布到 Release
 
 on:
-  workflow_dispatch:
+  workflow_dispatch:  # 只有你手动点按钮才会触发
+
+permissions:
+  contents: write    # 允许写入 Release
 
 jobs:
   gen-sources:
@@ -10,27 +13,54 @@ jobs:
       - name: 检出代码
         uses: actions/checkout@v4
 
-      - name: 设置 JDK 21  # 改这里
+      - name: 设置 JDK 21
         uses: actions/setup-java@v4
         with:
-          java-version: '21'  # 17 → 21
+          java-version: '21'
           distribution: 'temurin'
 
       - name: 赋予 gradlew 执行权限
         run: chmod +x gradlew
 
-      - name: 运行 genSources
+      - name: 运行 genSources(反编译核心)
         run: ./gradlew genSources --no-daemon
 
-      - name: 打包生成的文件
+      - name: 打包源码和缓存
         run: |
           mkdir -p output
-          cp -r build output/
+          cp -r build/ output/
           cp -r ~/.gradle/caches/fabric-loom output/fabric-loom-cache 2>/dev/null || true
-          cd output && zip -r ../gen-sources-output.zip . && cd ..
+          cd output && zip -r ../gen-sources-bundle.zip . && cd ..
 
-      - name: 上传 Artifact
-        uses: actions/upload-artifact@v4
+      - name: 获取当前时间
+        id: date
+        run: echo "DATE=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_OUTPUT
+
+      - name: 删除旧的 Release(避免同名冲突)
+        uses: dev-drprasad/delete-tag-and-release@v1.0
         with:
-          name: gen-sources-output
-          path: gen-sources-output.zip
+          tag_name: gen-sources-latest
+          delete_release: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true   # 第一次运行时没有旧 Release,允许报错继续
+
+      - name: 创建 Release 并上传
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: gen-sources-latest
+          name: "Minecraft 1.19.2 反编译源码(自动生成)"
+          body: |
+            自动生成于 ${{ steps.date.outputs.DATE }}
+            
+            ## 包含内容
+            - 反编译后的完整 Minecraft 源码(build/)
+            - Fabric Loom 缓存(fabric-loom-cache/)
+            
+            ## 用途
+            下载后解压到本地项目,即可获得自动补全支持。
+          files: gen-sources-bundle.zip
+          draft: false
+          prerelease: true   # 标记为预发布,不影响正式版本
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
