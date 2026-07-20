@@ -1,5 +1,6 @@
 package com.fabledzx;
 
+import net.minecraft.util.Identifier;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.item.Item;
