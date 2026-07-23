@@ -1,31 +1,30 @@
-name: build
+name: 构建
 on: [pull_request, push]
 
 jobs:
   build:
     runs-on: ubuntu-24.04
     steps:
-      - name: checkout repository
+      - name: 检出代码库
         uses: actions/checkout@v6
 
-      - name: validate gradle wrapper
+      - name: 验证Gradle Wrapper
         uses: gradle/actions/wrapper-validation@v6
 
-      - name: setup jdk
+      - name: 设置JDK
         uses: actions/setup-java@v5
         with:
           java-version: '21'
           distribution: 'microsoft'
-      - name: make gradle wrapper executable
-        run: chmod +x ./gradlew
-      - name: Generate Minecraft sources
-        run: ./gradlew genSources
 
-      - name: build
+      - name: 使 gradle wrapper 可执行
+        run: chmod +x ./gradlew
+
+      - name: 构建
         run: ./gradlew build
 
-      - name: capture build artifacts
+      - name: 抓取构建产物
         uses: actions/upload-artifact@v7
         with:
-          name: Artifacts
+          name: 构建产物
           path: build/libs/
