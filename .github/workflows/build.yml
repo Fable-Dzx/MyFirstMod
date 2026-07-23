@@ -27,4 +27,4 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: 构建产物
-          path: build/libs/
+          path: build/libs/myfirstmod-1.0.0.jar
