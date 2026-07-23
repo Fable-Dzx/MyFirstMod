@@ -1,5 +1,5 @@
 name: 构建
-on: [pull_request, push]
+on: [pull_request, push, workflow_dispatch]
 
 jobs:
   build:
