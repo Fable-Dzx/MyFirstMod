@@ -8,6 +8,7 @@ public class MyFirstMod implements ModInitializer {
     @Override
     public void onInitialize() {
         ModItems.register();
+        ModItems.register1();
         System.out.println("Hello Fabric World!");
     }
 }
